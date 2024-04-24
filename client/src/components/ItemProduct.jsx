@@ -7,7 +7,9 @@ import DeleteModal from './DeleteModal';
 import ProductDetails from './ProductDetails';
 import UpdateProduct from './UpdateProduct';
 
-export default function ItemProduct() {
+export default function ItemProduct({ product }) {
+
+    const { _id, name, description, brand, category, price, quantity, imagesUrl } = product;
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showProductDetails, setShowProductDetails] = useState(false);
@@ -25,8 +27,8 @@ export default function ItemProduct() {
     }
     // _________________________________________
 
-     // Handler showUpdateProduct:__________________
-     const handleShowUpdateProduct = () => {
+    // Handler showUpdateProduct:__________________
+    const handleShowUpdateProduct = () => {
         setShowUpdateProduct(!showUpdateProduct);
     }
     // _________________________________________
@@ -45,40 +47,33 @@ export default function ItemProduct() {
                     />
                     <div className='p-3 flex flex-col gap-2 w-full'>
                         <p className='truncate text-lg font-semibold text-slate-700'>
-                            {/* {listing.name} */}
-                            name
+                            {name}
                         </p>
                         <div className='flex items-center gap-1'>
                             <p className='text-sm text-gray-600 truncate w-full'>
-                                {/* {listing.address} */}
-                                address
+                                {description}
                             </p>
                         </div>
-                        <p className='text-sm text-gray-600 line-clamp-2'>
-                            {/* {listing.description} */}
-                            desc
-                        </p>
+                        {/* <p className='text-sm text-gray-600 line-clamp-2'>
+                            {description}
+                        </p> */}
                         <p className='text-slate-500 mt-2 font-semibold '>
-                            $Price
-                            {/* {listing.offer
-                            ? listing.discountPrice.toLocaleString('en-US')
-                            : listing.regularPrice.toLocaleString('en-US')}
-                        {listing.type === 'rent' && ' / month'} */}
+                            {price}$
                         </p>
-                        <div className='text-slate-700 flex gap-4'>
-                            <div className='font-bold text-xs'>
+                        {/* <div className='text-slate-700 flex gap-4'> */}
+                            {/* <div className='font-bold text-xs'> */}
                                 {/* {listing.bedrooms > 1
                                 ? `${listing.bedrooms} beds `
                                 : `${listing.bedrooms} bed `} */}
-                                bedrooms
-                            </div>
-                            <div className='font-bold text-xs'>
+                                {/* bedrooms */}
+                            {/* </div> */}
+                            {/* <div className='font-bold text-xs'> */}
                                 {/* {listing.bathrooms > 1
                                 ? `${listing.bathrooms} baths `
                                 : `${listing.bathrooms} bath `} */}
-                                bathrooms
-                            </div>
-                        </div>
+                                {/* bathrooms */}
+                            {/* </div> */}
+                        {/* </div> */}
                     </div>
                 </div>
                 <center>

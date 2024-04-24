@@ -1,12 +1,28 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import ItemProduct from '../components/ItemProduct';
 import TextAnimated from '../components/TextAnimated';
 import AddProduct from '../components/AddProduct';
+import { getProducts } from '../features/product/productActions';
+import Loading from '../components/Loading';
 
 const ProductScreen = () => {
 
-    const [showAddSection, setShowAddSection] = useState(false);
+    const { products, loading, error } = useSelector((state) => state.product);
+    const dispatch = useDispatch();
 
+    console.log('------------- loading: ------------- ', loading);
+    console.log('------------- products: ------------- ', products);
+    console.log('------------- error: ------------- ', error);
+
+    useEffect(() => {
+
+        dispatch(getProducts());
+    }, [dispatch])
+
+
+    // _________________________________________
+    const [showAddSection, setShowAddSection] = useState(false);
     // Handler showAddSection:__________________
     const handleShowAddSection = () => {
         setShowAddSection(!showAddSection);
@@ -40,11 +56,15 @@ const ProductScreen = () => {
 
             {/* ___________ Section for product list ___________ */}
             <div className='flex flex-wrap gap-7 justify-center'>
-                <ItemProduct />
-                <ItemProduct />
-                <ItemProduct />
-                <ItemProduct />
-                <ItemProduct />
+                {loading && <Loading />}
+                {
+                    products.length !== "" ? products.map((product, index) => (
+                        <ItemProduct key={index} product={product} />
+
+                    )) : (
+                        <h2 className='text-center text-2xl'>No products found</h2>
+                    )
+                }
             </div>
         </div>
     );

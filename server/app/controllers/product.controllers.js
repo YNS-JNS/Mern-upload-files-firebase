@@ -39,7 +39,7 @@ exports.createProduct = asyncHandler(async (req, res) => {
     res.json({
         success: true,
         message: "Product created successfully",
-        newProduct,
+        product: newProduct,
     });
 
 });
@@ -61,33 +61,33 @@ exports.getProductList = (req, res) => {
     const { name, minPrice, maxPrice, category } = req.query;
 
     // Validate input parameters
-    if (minPrice && maxPrice && isNaN(parseFloat(minPrice)) && isNaN(parseFloat(maxPrice))) {
-        return res.status(400).json({
-            message: "Invalid price range !"
-        })
-    }
+    // if (minPrice && maxPrice && isNaN(parseFloat(minPrice)) && isNaN(parseFloat(maxPrice))) {
+    //     return res.status(400).json({
+    //         message: "Invalid price range !"
+    //     })
+    // }
 
     const condition = {};
 
     // * Nb: $options: "i" makes the search case-insensitive.
 
     // * Filter by name
-    if (name) {
-        condition.name = { $regex: new RegExp(name), $options: "i" };
-    }
+    // if (name) {
+    //     condition.name = { $regex: new RegExp(name), $options: "i" };
+    // }
 
     // * Filter by price range
-    if (minPrice && maxPrice) {
-        condition.price = { $gte: parseFloat(minPrice), $lte: parseFloat(maxPrice) };
-    }
+    // if (minPrice && maxPrice) {
+    //     condition.price = { $gte: parseFloat(minPrice), $lte: parseFloat(maxPrice) };
+    // }
 
     // * Filter by category
-    if (category) {
-        condition.category = category;
-    }
+    // if (category) {
+    //     condition.category = category;
+    // }
 
     // * Use condition object to query products
-    ProductModel.find(condition).populate("category", "-_id -__v") // Mongoose Hide: _id & __v in result.
+    ProductModel.find(condition).populate("brand category", "-_id -__v") // Mongoose Hide: _id & __v in result.
         .then(products => {
             // Checking
             if (!products || products.length === 0) {
@@ -100,15 +100,15 @@ exports.getProductList = (req, res) => {
 
             // If good
             res.status(200).json({
-                status_code: 200,
+                success: true,
                 message: "Successfully retrieved products.",
                 totalItems: products.length,
-                data: products,
+                products,
             })
         })
         .catch((err) => {
             res.status(500).json({
-                status_code: 500,
+                success: false,
                 message: "Some error occurred while fetching the products.",
                 error: err.message,
             })
