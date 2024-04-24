@@ -1,0 +1,15 @@
+const express = require('express');
+const router = express.Router();
+const brandController = require('../controllers/brand.controllers');
+
+router.post('/', brandController.createBrand);
+
+router.get('/', brandController.getBrands);
+
+router.get('/:id', brandController.getBrand);
+
+router.put('/:id', brandController.updateBrand);
+
+router.delete('/:id', brandController.deleteBrand);
+
+module.exports = router;

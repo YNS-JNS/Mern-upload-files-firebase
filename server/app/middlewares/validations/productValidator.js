@@ -14,7 +14,7 @@ const checkingId = (id) => {
 
 // Checking Category Id
 exports.isIdCatValidator = (req, res, next) => {
-    
+
     const { error: idError } = checkingId(req.query.category);
 
     if (idError) {
@@ -52,10 +52,13 @@ exports.isIdValidator = (req, res, next) => {
 const createNewProduct = (data) => {
 
     const productSchema = Joi.object({
-
         name: Joi.string().required().min(2).max(45),
+        description: Joi.string().min(5).max(255),
+        brand: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(), // Assuming brand is a reference to another schema
+        category: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(), // Assuming category is a reference to another schema
         price: Joi.number().required(),
-        category: Joi.string().required().min(2).max(24),
+        quantity: Joi.number().required(),
+        imagesUrl: Joi.array().items(Joi.string().uri()) // Assuming image URLs are strings and should be valid URIs
     });
 
     return productSchema.validate(data);
@@ -87,8 +90,13 @@ const updateProduct = (data) => {
     const updateSchema = Joi.object({
 
         name: Joi.string().min(2).max(45),
+        description: Joi.string().min(5).max(255),
+        brand: Joi.objectId(), // Assuming brand is a reference to another schema
+        category: Joi.objectId(), // Assuming category is a reference to another schema
         price: Joi.number(),
-        category: Joi.string().min(2).max(24),
+        quantity: Joi.number(),
+        imagesUrl: Joi.array().items(Joi.string().uri()) // Assuming image URLs are strings and should be valid URIs
+
     }).min(1) // * At least one field must be present
 
     return updateSchema.validate(data);

@@ -1,87 +1,49 @@
 const ProductModel = require("../models/product.model");
 const CategoryModel = require("../models/category.model");
+const BrandModel = require("../models/brand.model");
+const asyncHandler = require("express-async-handler");
 
-/* ____________________________________________________________________ */
-/*                             POST section                             */
-/* ____________________________________________________________________ */
-/* Nb: I want to create a product that has a category and the category  */
-/* must belong to the category in the database.                         */
-/* ____________________________________________________________________ */
+exports.createProduct = asyncHandler(async (req, res) => {
 
-exports.createProduct = (req, res) => {
+    const { name, description, brand, category, price, quantity, imagesUrl } = req.body;
 
-    // Check if ID exists
-    CategoryModel.findById(req.body.category)
-        .then(
-            (categoryObject) => {
-                // If Category is not exists
-                if (!categoryObject) {
-                    return res.status(404).json({ message: "Category not found. Cannot create product." });
-                }
-
-                // Then, if exists create the Product
-                const newProduct = new ProductModel({
-                    ...req.body
-                });
-
-                newProduct.save()
-                    .then(product => {
-                        res.status(201).json({
-                            status_code: 201,
-                            message: "Created successfully",
-                            data: product
-                        })
-                    })
-                    .catch((err) => {
-                        res.status(500).json({
-                            status_code: 500,
-                            message: "Some error occurred while creating the Product.",
-                            error: err.message
-                        })
-                    });
-
-            }
-        )
-        .catch((err) => {
-            res.status(500).json({
-                status_code: 500,
-                message: `Some error occurred while searching for the category, Maybe the ID = ${req.body.category} is not valid !`,
-                error: err.message
-            })
-        });
-}
-
-// Using Async & await:
-/*
-exports.createProduct =  async (req, res) => {
-    try {
-      const { name, price, category } = req.body;
-  
-      Check if the category ID exists
-      const existingCategory = await CategoryModel.findById(category);
-      
-      if (!existingCategory) {
-        return res.status(404).json({ message: 'Category not found. Cannot create product.' });
-      }
-  
-      Category exists, proceed to create the product
-      const newProduct = new ProductModel({
-        name,
-        price,
-        category,
-      });
-  
-      const savedProduct = await newProduct.save();
-  
-      res.status(201).json({
-        message: 'Product saved successfully.',
-        data: savedProduct,
-      });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+    // check product existence 
+    const productExists = await ProductModel.findOne({ name });
+    if (productExists) {
+        throw new Error('Product Already Exists.');
     }
-  };
-*/
+    // check id brand 
+    const brandFound = await BrandModel.findById(brand);
+    if (!brandFound) {
+        throw new Error('Brand not found. Please create brand first or check brand name.');
+    }
+    // check id category
+    const categoryFound = await CategoryModel.findById(category);
+    if (!categoryFound) {
+        throw new Error('Category not found. Please create category first or check category name.');
+    }
+    // create new product
+    const newProduct = new ProductModel({
+        name,
+        description,
+        brand,
+        category,
+        price,
+        quantity,
+        imagesUrl
+    });
+
+    await newProduct.save();
+
+    //send response
+    res.json({
+        success: true,
+        message: "Product created successfully",
+        newProduct,
+    });
+
+});
+
 
 /* ____________________________________________________________________ */
 /*                           GET ALL section                            */
@@ -99,7 +61,7 @@ exports.getProductList = (req, res) => {
     const { name, minPrice, maxPrice, category } = req.query;
 
     // Validate input parameters
-    if ( minPrice && maxPrice && isNaN(parseFloat(minPrice)) && isNaN(parseFloat(maxPrice)) ) {
+    if (minPrice && maxPrice && isNaN(parseFloat(minPrice)) && isNaN(parseFloat(maxPrice))) {
         return res.status(400).json({
             message: "Invalid price range !"
         })

@@ -1,13 +1,3 @@
-/**
- * @module productRoutes
- * @description Express routes for handling products.
- * @version 1.0.0
-*/
-
-/* ____________________________________________________________________ */
-/*                            Importing section                         */
-/* ____________________________________________________________________ */
-
 const express = require("express");
 const productCtrl = require("../controllers/product.controllers");
 const {
@@ -55,10 +45,12 @@ router.post('/', productValidator, productCtrl.createProduct);
  * [
  *   {
  *     name: "Product 1",
+ *     ...
  *     price: 29.99
  *   },
  *   {
  *     name: "Product 2",
+ *     ...
  *     price: 39.99
  *   }
  * ]
