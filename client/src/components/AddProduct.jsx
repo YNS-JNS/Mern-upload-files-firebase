@@ -1,6 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { getBrands } from '../features/brand/brandActions';
+import { getCategories } from '../features/category/categoryActions';
+import { createProduct } from '../features/product/productActions';
+import { ToastContainer, toast } from 'react-toastify'
 
-const AddProduct = () => {
+const AddProduct = ({ setShowAddSection }) => {
+
+    const { brands } = useSelector(state => state.brand);
+    const { categories } = useSelector(state => state.category);
+    const { products, loading, error, isAdded } = useSelector(state => state.product);
+    const dispatch = useDispatch();
+
+    // console.log("Brands: ", brands);
+    // console.log("Categories: ", categories);
+
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -8,8 +22,11 @@ const AddProduct = () => {
         category: '',
         price: '',
         quantity: '',
-        image: null
+        // image: null
     });
+
+    console.log("formData: ", formData);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -21,8 +38,42 @@ const AddProduct = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Add your form submission logic here
+
+        // validation
+        if (!formData.name || !formData.description || !formData.brand || !formData.category || !formData.price || !formData.quantity) {
+            toast.error("Please fill in all fields");
+            return;
+        }
+
+        dispatch(createProduct(formData));
+        // clear
+        setFormData({
+            name: '',
+            description: '',
+            brand: '',
+            category: '',
+            price: '',
+            quantity: '',
+            // image: null
+        })
     };
+
+    useEffect(() => {
+
+        if (isAdded === true) {
+            toast.success("New product added successfully");
+            setShowAddSection(false);
+
+        } else if (error) {
+            toast.error("Error adding product, please try again later")
+        }
+    }, [isAdded, error]);
+
+    useEffect(() => {
+        dispatch(getBrands())
+        dispatch(getCategories())
+    }, [dispatch])
+
 
     return (
         <div className='drop-shadow-2xl'>
@@ -73,8 +124,14 @@ const AddProduct = () => {
                                         value={formData.brand}
                                         onChange={handleChange}
                                     >
-                                        <option value="">Brand X</option>
-                                        <option value="">Brand Y</option>
+                                        {/* Default Option */}
+                                        <option value="">----Select Brand----</option>
+                                        {/* Brand Options */}
+                                        {
+                                            brands?.map((brand, index) => (
+                                                <option key={index} value={brand.id}>{brand.name}</option>
+                                            ))
+                                        }
                                     </select>
                                 </div>
 
@@ -88,9 +145,14 @@ const AddProduct = () => {
                                         value={formData.category}
                                         onChange={handleChange}
                                     >
-                                        <option value="">Category X</option>
-                                        <option value="">Category Y</option>
-                                        <option value="">Category Z</option>
+                                        {/* Default Option */}
+                                        <option value="">----Select Category----</option>
+                                        {/* Category Options */}
+                                        {
+                                            categories?.map((category, index) => (
+                                                <option key={index} value={category.id}>{category.name}</option>
+                                            ))
+                                        }
                                     </select>
                                 </div>
 
@@ -123,7 +185,7 @@ const AddProduct = () => {
                                 </div>
 
                                 {/* image */}
-                                <div className="md:col-span-1">
+                                {/* <div className="md:col-span-1">
                                     <label htmlFor="image" className='text-white'>Image</label>
                                     <input
                                         type="file"
@@ -132,7 +194,7 @@ const AddProduct = () => {
                                         className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                                         onChange={handleChange}
                                     />
-                                </div>
+                                </div> */}
 
                                 <div className="md:col-span-2 text-right">
                                     <div className="inline-flex items-end">
@@ -149,6 +211,7 @@ const AddProduct = () => {
                     </div>
                 </form>
             </div>
+            <ToastContainer />
         </div>
     );
 };

@@ -8,12 +8,14 @@ import Loading from '../components/Loading';
 
 const ProductScreen = () => {
 
+    const [showAddSection, setShowAddSection] = useState(false);
     const { products, loading, error } = useSelector((state) => state.product);
     const dispatch = useDispatch();
 
     console.log('------------- loading: ------------- ', loading);
     console.log('------------- products: ------------- ', products);
     console.log('------------- error: ------------- ', error);
+    console.log('------------- error: ------------- ', error?.message);
 
     useEffect(() => {
 
@@ -21,8 +23,6 @@ const ProductScreen = () => {
     }, [dispatch])
 
 
-    // _________________________________________
-    const [showAddSection, setShowAddSection] = useState(false);
     // Handler showAddSection:__________________
     const handleShowAddSection = () => {
         setShowAddSection(!showAddSection);
@@ -49,7 +49,7 @@ const ProductScreen = () => {
             <div style={{ opacity: showAddSection ? 1 : 0, transition: 'opacity 1s ease-in-out' }}>
                 {
                     showAddSection && (
-                        <AddProduct />
+                        <AddProduct setShowAddSection={setShowAddSection}/>
                     )
                 }
             </div>
@@ -57,6 +57,11 @@ const ProductScreen = () => {
             {/* ___________ Section for product list ___________ */}
             <div className='flex flex-wrap gap-7 justify-center'>
                 {loading && <Loading />}
+                {error &&
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <span className="block sm:inline">{error?.message}</span>
+                    </div>
+                }
                 {
                     products.length !== "" ? products.map((product, index) => (
                         <ItemProduct key={index} product={product} />

@@ -1,13 +1,13 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../config/axois'
 
-// Get products
-export const getProducts = createAsyncThunk(
-    'product/getProducts', async (args, thunkAPI) => {
+// Get brands
+export const getBrands = createAsyncThunk(
+    'brand/getBrands', async (args, thunkAPI) => {
 
         try {
 
-            const { data } = await axios.get('products');
+            const { data } = await axios.get('brands');
             return data;
 
         } catch (error) {
@@ -16,11 +16,11 @@ export const getProducts = createAsyncThunk(
     }
 );
 
-// Create a new product
-export const createProduct = createAsyncThunk('product/createProduct', async (payload, thunkAPI) => {
+// Create a new brand
+export const createBrand = createAsyncThunk('brand/createBrand', async (payload, thunkAPI) => {
     try {
 
-        const { data } = await axios.post('products', payload);
+        const { data } = await axios.post('brands', payload);
         return data;
 
     } catch (error) {

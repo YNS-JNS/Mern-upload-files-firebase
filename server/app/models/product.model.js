@@ -31,7 +31,7 @@ const productSchema = mongoose.Schema(
         },
         imagesUrl:{
             type: Array,
-            required: [true, "Product must have at least one image"]
+            // required: [true, "Product must have at least one image"]
         }
     }
 );

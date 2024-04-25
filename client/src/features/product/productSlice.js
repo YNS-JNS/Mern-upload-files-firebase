@@ -1,12 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getProducts } from './productActions'
+import { getProducts, createProduct } from './productActions';
 
 const initialState = {
 
     products: [],
-    // product: {},
     loading: false,
     error: null,
+    isAdded: false,
 };
 
 const productSlice = createSlice({
@@ -16,23 +16,37 @@ const productSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
 
-        // fetch products
+        // Fetch products
         builder.addCase(getProducts.pending, (state) => {
             state.loading = true;
             state.error = null;
-            // console.log("pending");
         });
         builder.addCase(getProducts.fulfilled, (state, { payload }) => {
             state.loading = false;
             state.products = payload.products;
-            // console.log("fulfilled");
         });
         builder.addCase(getProducts.rejected, (state, { payload }) => {
             state.loading = false;
             state.products = [];
             state.error = payload;
-            // console.log("rejected");
-        })
+            // state.error = payload.message;
+        });
+
+        // Create new product
+        builder.addCase(createProduct.pending, (state) => {
+            state.loading = true;
+            // state.error = null;
+        });
+        builder.addCase(createProduct.fulfilled, (state, { payload }) => {
+            state.loading = false;
+            // state.products = [...state.products, payload];
+            state.products.push(payload.product);
+            state.isAdded = true;
+        });
+        builder.addCase(createProduct.rejected, (state, { payload }) => {
+            state.loading = false;
+            state.error = payload;
+        });
     }
 });
 
