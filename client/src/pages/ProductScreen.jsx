@@ -3,31 +3,69 @@ import { useDispatch, useSelector } from 'react-redux'
 import ItemProduct from '../components/ItemProduct';
 import TextAnimated from '../components/TextAnimated';
 import AddProduct from '../components/AddProduct';
-import { getProducts } from '../features/product/productActions';
+import { getBrands } from '../features/brand/brandActions';
+import { getCategories } from '../features/category/categoryActions';
+import { createProduct, getProducts } from '../features/product/productActions';
 import Loading from '../components/Loading';
+import { ToastContainer, toast } from 'react-toastify';
+
 
 const ProductScreen = () => {
 
-    const [showAddSection, setShowAddSection] = useState(false);
-    const { products, loading, error } = useSelector((state) => state.product);
-    const dispatch = useDispatch();
+    // Product
+    const { products, loading, error, isAdded } = useSelector((state) => state.product);
+    // Brand
+    const { brands } = useSelector(state => state.brand);
+    // Category
+    const { categories } = useSelector(state => state.category);
 
-    console.log('------------- loading: ------------- ', loading);
-    console.log('------------- products: ------------- ', products);
-    console.log('------------- error: ------------- ', error);
-    console.log('------------- error: ------------- ', error?.message);
+    const dispatch = useDispatch();
 
     useEffect(() => {
 
         dispatch(getProducts());
+        dispatch(getBrands());
+        dispatch(getCategories());
+
     }, [dispatch])
 
+
+    // _________________________________________
+    // Show Add Section (Add Product)
+    const [showAddSection, setShowAddSection] = useState(false);
 
     // Handler showAddSection:__________________
     const handleShowAddSection = () => {
         setShowAddSection(!showAddSection);
         console.log(showAddSection);
     }
+    // _________________________________________
+
+    // handleAddProduct:________________________
+    const handleAddProduct = (payload) => {
+        dispatch(createProduct(payload));
+    };
+    // _________________________________________
+
+    // When the product is added:
+    useEffect(() => {
+
+        if (isAdded === true) {
+            toast.success("New product added successfully");
+            setShowAddSection(false);
+
+        } else if (error) {
+            toast.error("Error adding product, please try again later")
+        }
+    }, [isAdded, error]);
+
+    // _________________________________________
+    /* Consoles sections ______________________ */
+    // console.log(' loading => ', loading);
+    // console.log(' products: => ', products);
+    // console.log(' error: => ', error);
+    // console.log(' error: => ', error?.message);
+    // console.log(' isAdded: => ', isAdded);
     // _________________________________________
 
     return (
@@ -49,7 +87,7 @@ const ProductScreen = () => {
             <div style={{ opacity: showAddSection ? 1 : 0, transition: 'opacity 1s ease-in-out' }}>
                 {
                     showAddSection && (
-                        <AddProduct setShowAddSection={setShowAddSection}/>
+                        <AddProduct brands={brands} categories={categories} handleAddProduct={handleAddProduct} loading={loading} />
                     )
                 }
             </div>
@@ -71,6 +109,7 @@ const ProductScreen = () => {
                     )
                 }
             </div>
+            <ToastContainer />
         </div>
     );
 };
