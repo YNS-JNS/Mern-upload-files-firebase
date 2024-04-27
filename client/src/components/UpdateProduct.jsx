@@ -22,7 +22,6 @@ const UpdateProduct = ({ handleShowUpdateProduct }) => {
                     </button>
 
                     {/* content  */}
-                    {/* <div className="bg-gradient-to-tr to-blue-700 from-indigo-900 rounded shadow-lg p-4 px-4 md:p-8 mb-6"> */}
                     <div className="p-4 px-4 md:p-8 mb-6">
                         <form
                         // onSubmit={handleSubmit}

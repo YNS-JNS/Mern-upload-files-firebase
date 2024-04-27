@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
+import { storage } from '../firebase';
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 
-const AddProduct = () => {
+const AddProduct = ({ brands, categories, handleAddProduct, loading }) => {
+
+    // file image
+    const [imageAsFile, setImageAsFile] = useState(null);
+    // String URL of image
+    const [imageAsUrl, setImageAsUrl] = useState(null);
+    // Progress Percent %
+    const [progressPercent, setProgressPercent] = useState(0);
+
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -11,18 +21,138 @@ const AddProduct = () => {
         image: null
     });
 
+    const [errors, setErrors] = useState({});
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
             [name]: value
         });
+
+        // Clear the error for the field if it becomes non-empty
+        if (value && errors[name]) {
+            setErrors({ ...errors, [name]: '' });
+        }
+
+        /*
+        NB: So, this condition checks if the current value of the input field is non-empty (value) 
+        and if there's already an error message stored for that field (errors[name]). 
+        If both conditions are true, it clears the error message for that field, providing real-time error hiding as the user types in the input field.
+        */
     };
+
+    const handleChangeImage = (e) => {
+
+        const imageFile = e.target.files[0];
+        setImageAsFile(imageFile);
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Add your form submission logic here
+
+        // Form validation
+        const formErrors = {};
+        if (!formData.name) formErrors.name = 'Name is required';
+        if (!formData.description) formErrors.description = 'Description is required';
+        if (!formData.brand) formErrors.brand = 'Brand is required';
+        if (!formData.category) formErrors.category = 'Category is required';
+        if (!formData.price) formErrors.price = 'Price is required';
+        if (!formData.quantity) formErrors.quantity = 'Quantity is required';
+
+        if (Object.keys(formErrors).length > 0) {
+            setErrors(formErrors);
+            return;
+        }
+
+        // Clear errors
+        setErrors({});
+
+        // Handle form submission
+        handleAddProduct(formData);
+
+        // Clear form data
+        setFormData({
+            name: '',
+            description: '',
+            brand: '',
+            category: '',
+            price: '',
+            quantity: '',
+            image: null
+        })
     };
+
+    const handleFireBaseUpload = (e) => {
+        e.preventDefault();
+        console.log('start of upload!');
+        // async magic goes here...
+        // lets start with some error handling
+        /*
+        if (imageAsFile.imageFile === null) {
+            console.error(`Not an image, the image file is a ${typeof (imageAsFile.imageFile)}`);
+            return;
+        }
+        if (imageAsFile.imageFile.type!== 'image/jpeg' && imageAsFile.imageFile.type!== 'image/png') {
+            console.error(`This is not an image, the image file is a ${imageAsFile.imageFile.type}`);
+            return;
+        }
+        if (imageAsFile.imageFile.size > 2000000) {
+            console.error(`This is too large, the image file is ${imageAsFile.imageFile.size} bytes.`);
+            return;
+        }
+        if we get here, we can upload the image
+        */
+
+        if (imageAsFile === null) {
+            return console.error('No file selected');
+        }
+
+        if (imageAsFile === '') {
+            return console.error(`not an image, the image file is a ${typeof (imageAsFile)}`);
+            // the error message will tell you if you didn't upload an image or it was null or undefined.
+        }
+
+        const storageRef = ref(storage, `images/${imageAsFile.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, imageAsFile);
+
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                setProgressPercent(percent);
+            },
+            (error) => {
+                alert(error);
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref)
+                    .then((downloadURL) => {
+                        setImageAsUrl(downloadURL);
+                    });
+            }
+        );
+
+        /*
+        Explaining: // https://blog.logrocket.com/firebase-cloud-storage-firebase-v9-react/
+        Let’s break down what is occurring in the handleSubmit function. We initialized two states for the image URL after we read the uploaded file and the progress value as the image is being uploaded.
+        
+        const file = e.target[0]?.files[0] created a variable and saved the supplied file to it.
+        
+        Next, we created a reference to the file we want to operate on by calling the ref() on the instance of the storage service we already created in the config file. As the second parameter, we passed in a path we want the ref to point to, which is optional.
+        
+        Once the reference has been created, we can upload a file by calling the uploadBytesResumable(). It takes the reference we created earlier and then the file to be uploaded to cloud storage. Note that uploadBytes() does exactly the same thing, so either one can be used.
+        
+        However, with uploadBytesResumable(), the upload can be paused and resumed, and it exposes progress updates. We use it here because we want to display the progress of the upload as it’s ongoing. If you don’t want that functionality, feel free to use uploadBytes().
+        
+        Next, we call the on() method on the promise returned from calling uploadBytesResumable() to listen for state changes, errors, and successful uploads. These three callback functions are run at different stages of the file upload. The first runs during the upload to observe state change events like progress, pause, and resume, while the next one is triggered when there is an unsuccessful upload. Finally, the last is run when the upload completes successfully.
+        
+        On successful upload, we call the getDownloadURL() to get the download URL of the file to display on the app. We then update state with the new image URL downloaded.
+        */
+    }
+
+    /* ______________ Console Section ______________ */
+    console.log(imageAsFile);
+    /* _____________________________________________ */
 
     return (
         <div className='drop-shadow-2xl'>
@@ -48,6 +178,7 @@ const AddProduct = () => {
                                         value={formData.name}
                                         onChange={handleChange}
                                     />
+                                    {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
                                 </div>
 
                                 {/* description */}
@@ -61,6 +192,7 @@ const AddProduct = () => {
                                         value={formData.description}
                                         onChange={handleChange}
                                     ></textarea>
+                                    {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
                                 </div>
 
                                 {/* brand */}
@@ -73,9 +205,16 @@ const AddProduct = () => {
                                         value={formData.brand}
                                         onChange={handleChange}
                                     >
-                                        <option value="">Brand X</option>
-                                        <option value="">Brand Y</option>
+                                        {/* Default Option */}
+                                        <option value="">----Select Brand----</option>
+                                        {/* Brand Options */}
+                                        {
+                                            brands?.map((brand, index) => (
+                                                <option key={index} value={brand.id}>{brand.name}</option>
+                                            ))
+                                        }
                                     </select>
+                                    {errors.brand && <p className="text-red-500 text-sm">{errors.brand}</p>}
                                 </div>
 
                                 {/* category */}
@@ -88,10 +227,16 @@ const AddProduct = () => {
                                         value={formData.category}
                                         onChange={handleChange}
                                     >
-                                        <option value="">Category X</option>
-                                        <option value="">Category Y</option>
-                                        <option value="">Category Z</option>
+                                        {/* Default Option */}
+                                        <option value="">----Select Category----</option>
+                                        {/* Category Options */}
+                                        {
+                                            categories?.map((category, index) => (
+                                                <option key={index} value={category.id}>{category.name}</option>
+                                            ))
+                                        }
                                     </select>
+                                    {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
                                 </div>
 
                                 {/* price */}
@@ -106,6 +251,7 @@ const AddProduct = () => {
                                         value={formData.price}
                                         onChange={handleChange}
                                     />
+                                    {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
                                 </div>
 
                                 {/* quantity */}
@@ -120,6 +266,7 @@ const AddProduct = () => {
                                         value={formData.quantity}
                                         onChange={handleChange}
                                     />
+                                    {errors.quantity && <p className="text-red-500 text-sm">{errors.quantity}</p>}
                                 </div>
 
                                 {/* image */}
@@ -130,8 +277,30 @@ const AddProduct = () => {
                                         name="image"
                                         id="image"
                                         className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                        onChange={handleChange}
+                                        onChange={handleChangeImage}
                                     />
+                                    {!imageAsUrl &&
+                                        <div className='outerbar h-8 w-full'>
+                                            <div className='innerbar bg-blue-500 h-full' style={{ width: `${progressPercent}%` }}>
+                                                <span className="text-white">{progressPercent}%</span>
+                                            </div>
+                                        </div>
+
+                                    }
+
+                                    {
+                                        imageAsUrl &&
+                                        <img src={imageAsUrl} alt='uploaded file' className="h-200" />
+
+                                    }
+                                </div>
+                                <div className="md:col-span-1 flex items-end">
+                                    <button
+                                        className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border-b-4 border-blue-700 rounded transform transition duration-200 ease-in-out hover:-translate-y-1 hover:scale-110'
+                                        onClick={handleFireBaseUpload}
+                                    >
+                                        Upload image
+                                    </button>
                                 </div>
 
                                 <div className="md:col-span-2 text-right">
@@ -140,7 +309,9 @@ const AddProduct = () => {
                                             // className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border-b-4 border-blue-700 rounded transform transition duration-200 ease-in-out hover:-translate-y-1 hover:scale-110"
                                             type='submit'
-                                        >Save</button>
+                                        >
+                                            {loading ? 'Saving...' : 'Save'} {/* Change button text when loading */}
+                                        </button>
                                     </div>
                                 </div>
 
