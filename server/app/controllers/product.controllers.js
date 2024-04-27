@@ -144,7 +144,7 @@ exports.updateProduct = (req, res) => {
             err => {
                 res.status(500).json({
                     status_code: 500,
-                    message: "Some error occured while updating the product",
+                    message: "Some error occurred while updating the product",
                     error: err.message,
                 })
             }
@@ -179,7 +179,7 @@ exports.deleteOneProduct = (req, res) => {
             err => {
                 res.status(500).json({
                     status_code: 500,
-                    message: "Some error occured while removing the product",
+                    message: "Some error occurred while removing the product",
                     error: err.message,
                 })
             }
