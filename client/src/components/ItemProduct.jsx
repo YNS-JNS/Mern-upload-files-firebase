@@ -38,9 +38,7 @@ export default function ItemProduct({ product }) {
             <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px]'>
                 <div>
                     <img
-                        src={
-                            imagesUrl.length > 0 ? imagesUrl[1] : 'https://53.fs1.hubspotusercontent-na1.net/hub/53/hubfs/Sales_Blog/real-estate-business-compressor.jpg?width=595&height=400&name=real-estate-business-compressor.jpg'
-                        }
+                        src={imagesUrl && imagesUrl}
                         alt='product cover'
                         className='h-[350px] sm:h-[220px] w-full object-cover hover:scale-105 transition-scale duration-300'
                     />
@@ -48,11 +46,6 @@ export default function ItemProduct({ product }) {
                         <p className='truncate text-lg font-semibold text-slate-700'>
                             {name}
                         </p>
-                        {/* <div className='flex items-center gap-1'>
-                            <p className='text-sm text-gray-600 truncate w-full'>
-                                {description}
-                            </p>
-                        </div> */}
                         <p className='text-slate-500 mt-2 font-semibold '>
                             {price}$
                         </p>
