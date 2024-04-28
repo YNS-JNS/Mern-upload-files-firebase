@@ -7,7 +7,7 @@ const AddProduct = ({ brands, categories, handleAddProduct, loading }) => {
     // file image
     const [imageAsFile, setImageAsFile] = useState(null);
     // String URL of image
-    const [imageAsUrl, setImageAsUrl] = useState(null);
+    // const [imageAsUrl, setImageAsUrl] = useState(null);
     // Progress Percent %
     const [progressPercent, setProgressPercent] = useState(0);
 
@@ -70,6 +70,8 @@ const AddProduct = ({ brands, categories, handleAddProduct, loading }) => {
 
         // Handle form submission
         handleAddProduct(formData);
+        console.log(formData);
+
 
         // Clear form data
         setFormData({
@@ -127,7 +129,11 @@ const AddProduct = ({ brands, categories, handleAddProduct, loading }) => {
             () => {
                 getDownloadURL(uploadTask.snapshot.ref)
                     .then((downloadURL) => {
-                        setImageAsUrl(downloadURL);
+                        // setImageAsUrl(downloadURL);
+                        setFormData({
+                            ...formData,
+                            image: downloadURL
+                        });
                     });
             }
         );
@@ -151,7 +157,7 @@ const AddProduct = ({ brands, categories, handleAddProduct, loading }) => {
     }
 
     /* ______________ Console Section ______________ */
-    console.log(imageAsFile);
+    // console.log(formData);
     /* _____________________________________________ */
 
     return (
@@ -279,8 +285,9 @@ const AddProduct = ({ brands, categories, handleAddProduct, loading }) => {
                                         className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                                         onChange={handleChangeImage}
                                     />
-                                    {!imageAsUrl &&
-                                        <div className='outerbar h-8 w-full'>
+                                    {/* {!imageAsUrl && */}
+                                    {!formData.image &&
+                                        <div className='outerbar bg-gray-200 h-8 w-full'>
                                             <div className='innerbar bg-blue-500 h-full' style={{ width: `${progressPercent}%` }}>
                                                 <span className="text-white">{progressPercent}%</span>
                                             </div>
@@ -289,8 +296,9 @@ const AddProduct = ({ brands, categories, handleAddProduct, loading }) => {
                                     }
 
                                     {
-                                        imageAsUrl &&
-                                        <img src={imageAsUrl} alt='uploaded file' className="h-200" />
+                                        // imageAsUrl &&
+                                        formData.image &&
+                                        <img src={formData.image} alt='uploaded file' className="h-200" />
 
                                     }
                                 </div>

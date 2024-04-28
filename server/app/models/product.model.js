@@ -30,7 +30,8 @@ const productSchema = mongoose.Schema(
             required: [true, "Quantity must be a number and required !"]
         },
         imagesUrl:{
-            type: Array,
+            type: String,
+            // type: Array,
             // required: [true, "Product must have at least one image"]
         }
     }
