@@ -58,7 +58,8 @@ const createNewProduct = (data) => {
         category: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(), // Assuming category is a reference to another schema
         price: Joi.number().required(),
         quantity: Joi.number().required(),
-        imagesUrl: Joi.array().items(Joi.string().uri()) // Assuming image URLs are strings and should be valid URIs
+        imagesUrl: Joi.string().uri()
+        // imagesUrl: Joi.array().items(Joi.string().uri()) // Assuming image URLs are strings and should be valid URIs
     });
 
     return productSchema.validate(data);
