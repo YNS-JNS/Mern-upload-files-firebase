@@ -1,11 +1,7 @@
 const express = require("express");
 const productCtrl = require("../controllers/product.controllers");
-const {
-    isIdValidator,
-    isIdCatValidator,
-    productValidator,
-    updateValidator
-} = require("../middlewares/validations/productValidator");
+const { productValidator } = require("../middlewares/validations/createProdValidator");
+const { isIdValidator } = require("../middlewares/validations/idValidator");
 
 const router = express.Router(); // Router func
 
@@ -59,7 +55,7 @@ router.post('/', productValidator, productCtrl.createProduct);
  * @desc GET | GET ALL Products
  * @params No param
 */
-router.get('/', isIdCatValidator, productCtrl.getProductList);
+router.get('/', productCtrl.getProductList);
 
 // ______________________________________________________________________
 
@@ -67,7 +63,7 @@ router.get('/', isIdCatValidator, productCtrl.getProductList);
  * @desc PUT | Update a Product
  * @params {id}
 */
-router.put('/:id', isIdValidator, updateValidator, productCtrl.updateProduct);
+router.put('/:id', isIdValidator, productCtrl.updateProduct);
 
 // ______________________________________________________________________
 
@@ -75,7 +71,7 @@ router.put('/:id', isIdValidator, updateValidator, productCtrl.updateProduct);
  * @desc DELETE | Delete a Product
  * @params {id}
 */
-router.delete('/:id', isIdValidator, updateValidator, productCtrl.updateProduct);
+router.delete('/:id', isIdValidator, productCtrl.updateProduct);
 
 // ______________________________________________________________________
 
