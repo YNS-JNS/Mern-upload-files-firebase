@@ -79,7 +79,7 @@ export default function ItemProduct({ product }) {
             {/* ___________ Section for show product details ___________ */}
             {
                 showProductDetails && (
-                    <ProductDetails handleShowProductDetails={handleShowProductDetails} />
+                    <ProductDetails handleShowProductDetails={handleShowProductDetails} product={product} />
                 )
             }
 
