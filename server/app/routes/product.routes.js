@@ -60,6 +60,29 @@ router.get('/', productCtrl.getProductList);
 // ______________________________________________________________________
 
 /**
+ * @function getProduct
+ * @description Get a product by id.
+ * @route {GET} /api/v1/product/:id
+ * @returns {Object[]} - Product.
+ * @throws {Error} - If there is an issue retrieving the product list.
+ * @example
+ * [
+ *   {
+ *     name: "Product 1",
+ *     ...
+ *     price: 29.99
+ *   }
+ * ]
+*/
+/**
+ * @desc GET | GET Product
+ * @params {id}
+*/
+router.get('/:id', isIdValidator, productCtrl.getProduct);
+
+// ______________________________________________________________________
+
+/**
  * @desc PUT | Update a Product
  * @params {id}
 */

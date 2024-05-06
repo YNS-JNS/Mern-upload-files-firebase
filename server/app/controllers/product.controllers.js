@@ -88,6 +88,7 @@ exports.getProductList = (req, res) => {
 
     // * Use condition object to query products
     ProductModel.find(condition).populate("brand category", "-_id -__v") // Mongoose Hide: _id & __v in result.
+        .sort({ _id: -1 }) // Sort by _id in descending order
         .then(products => {
             // Checking
             if (!products || products.length === 0) {
@@ -114,6 +115,27 @@ exports.getProductList = (req, res) => {
             })
         });
 };
+
+/* ____________________________________________________________________ */
+/*                           GET PRODUCT section                        */
+/* ____________________________________________________________________ */
+exports.getProduct = asyncHandler(async (req, res) => {
+
+    const { id } = req.params;
+
+    const product = await ProductModel.find({ _id: id }).populate("brand category", "-_id -__v");
+
+    if (!product) {
+        throw new Error("Product not found");
+    }
+
+    res.status(200).json({
+        success: true,
+        message: "Product fetched successfully",
+        product,
+    })
+
+});
 
 /* ____________________________________________________________________ */
 /*                            UPDATE section                            */

@@ -1,6 +1,13 @@
 import React from 'react'
+import PropTypes from 'prop-types';
 
-const ViewProduct = ({ handleShowProductDetails }) => {
+const ViewProduct = ({ handleShowProductDetails, product }) => {
+
+  const { id, name, description, brand, category, price, quantity, imagesUrl } = product;
+
+  console.log(product)
+
+
   return (
     <div className="fixed inset-0 z-40 min-h-full overflow-y-auto overflow-x-hidden transition flex items-center ">
 
@@ -28,7 +35,10 @@ const ViewProduct = ({ handleShowProductDetails }) => {
               <div className="flex flex-col md:flex-row -mx-4">
                 <div className="md:flex-1 px-4">
                   <div className="h-[460px] rounded-lg bg-gray-300 dark:bg-gray-700 mb-4">
-                    <img className="w-full h-full object-cover" src="https://cdn.pixabay.com/photo/2020/05/22/17/53/mockup-5206355_960_720.jpg" alt="Product Image" />
+                    <img className="w-full h-full object-cover" 
+                    src={imagesUrl && imagesUrl}
+                    // src="https://cdn.pixabay.com/photo/2020/05/22/17/53/mockup-5206355_960_720.jpg"
+                     alt="Product Image" />
                   </div>
                   {/* <div className="flex -mx-2 mb-4">
                     <div className="w-1/2 px-2">
@@ -44,14 +54,19 @@ const ViewProduct = ({ handleShowProductDetails }) => {
                   </div> */}
                 </div>
                 <div className="md:flex-1 px-4">
-                  <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Product Name</h2>
+                  <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                    {name}
+                  </h2>
                   <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sed ante justo. Integer euismod libero id mauris malesuada tincidunt.
+                    brand: {brand.name}
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                    category: {category.name}
                   </p>
                   <div className="flex mb-4">
                     <div className="mr-4">
                       <span className="font-bold text-gray-700 dark:text-gray-300">Price:</span>
-                      <span className="text-gray-600 dark:text-gray-300">$29.99</span>
+                      <span className="text-gray-600 dark:text-gray-300">${price}</span>
                     </div>
                     <div>
                       <span className="font-bold text-gray-700 dark:text-gray-300">Availability:</span>
@@ -80,7 +95,7 @@ const ViewProduct = ({ handleShowProductDetails }) => {
                   <div>
                     <span className="font-bold text-gray-700 dark:text-gray-300">Product Description:</span>
                     <p className="text-gray-600 dark:text-gray-300 text-sm mt-2">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sed ante justo. Integer euismod libero id mauris malesuada tincidunt. Vivamus commodo nulla ut lorem rhoncus aliquet. Duis dapibus augue vel ipsum pretium, et venenatis sem blandit. Quisque ut erat vitae nisi ultrices placerat non eget velit. Integer ornare mi sed ipsum lacinia, non sagittis mauris blandit. Morbi fermentum libero vel nisl suscipit, nec tincidunt mi consectetur.
+                      {description}
                     </p>
                   </div>
                 </div>
@@ -96,5 +111,23 @@ const ViewProduct = ({ handleShowProductDetails }) => {
 
   )
 }
+
+ViewProduct.propTypes = {
+  handleShowProductDetails: PropTypes.func.isRequired,
+  product: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    brand: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+    }).isRequired,
+    category: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+    }).isRequired,
+    price: PropTypes.number.isRequired,
+    quantity: PropTypes.number.isRequired,
+    imagesUrl: PropTypes.string.isRequired,
+  }).isRequired,
+};
 
 export default ViewProduct

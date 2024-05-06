@@ -13,7 +13,7 @@ import { ToastContainer, toast } from 'react-toastify';
 const ProductScreen = () => {
 
     // Product
-    const { products, loading, error, isAdded } = useSelector((state) => state.product);
+    const { products, loading, error, productAddStatus } = useSelector((state) => state.product);
     // Brand
     const { brands } = useSelector(state => state.brand);
     // Category
@@ -50,14 +50,17 @@ const ProductScreen = () => {
     // When the product is added:
     useEffect(() => {
 
-        if (isAdded === true) {
+        // if (isAdded === true) {
+        if (productAddStatus === 'fulfilled') {
             toast.success("New product added successfully");
             setShowAddSection(false);
 
-        } else if (error) {
+            // } else if (error) {
+        } else if (productAddStatus === 'rejected') {
             toast.error("Error adding product, please try again later")
         }
-    }, [isAdded, error]);
+        // }, [isAdded, error]);
+    }, [productAddStatus]);
 
     // _________________________________________
     /* Consoles sections ______________________ */
@@ -87,7 +90,7 @@ const ProductScreen = () => {
             <div style={{ opacity: showAddSection ? 1 : 0, transition: 'opacity 1s ease-in-out' }}>
                 {
                     showAddSection && (
-                        <AddProduct brands={brands} categories={categories} handleAddProduct={handleAddProduct} loading={loading} />
+                        <AddProduct brands={brands} categories={categories} handleAddProduct={handleAddProduct} productAddStatus={productAddStatus} />
                     )
                 }
             </div>
