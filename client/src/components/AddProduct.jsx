@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { storage } from '../firebase';
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 
-const AddProduct = ({ brands, categories, handleAddProduct, loading }) => {
+const AddProduct = ({ brands, categories, handleAddProduct, productAddStatus }) => {
 
     // file image
     const [imageAsFile, setImageAsFile] = useState(null);
@@ -18,7 +18,7 @@ const AddProduct = ({ brands, categories, handleAddProduct, loading }) => {
         category: '',
         price: '',
         quantity: '',
-        image: null
+        imagesUrl: null
     });
 
     const [errors, setErrors] = useState({});
@@ -81,7 +81,7 @@ const AddProduct = ({ brands, categories, handleAddProduct, loading }) => {
             category: '',
             price: '',
             quantity: '',
-            image: null
+            imagesUrl: null
         })
     };
 
@@ -132,7 +132,7 @@ const AddProduct = ({ brands, categories, handleAddProduct, loading }) => {
                         // setImageAsUrl(downloadURL);
                         setFormData({
                             ...formData,
-                            image: downloadURL
+                            imagesUrl: downloadURL
                         });
                     });
             }
@@ -157,7 +157,7 @@ const AddProduct = ({ brands, categories, handleAddProduct, loading }) => {
     }
 
     /* ______________ Console Section ______________ */
-    // console.log(formData);
+    console.log("--- Image url: ---", formData.imagesUrl);
     /* _____________________________________________ */
 
     return (
@@ -318,7 +318,7 @@ const AddProduct = ({ brands, categories, handleAddProduct, loading }) => {
                                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border-b-4 border-blue-700 rounded transform transition duration-200 ease-in-out hover:-translate-y-1 hover:scale-110"
                                             type='submit'
                                         >
-                                            {loading ? 'Saving...' : 'Save'} {/* Change button text when loading */}
+                                            {productAddStatus === 'pending' ? 'Saving...' : 'Save'} {/* Change button text when loading */}
                                         </button>
                                     </div>
                                 </div>
