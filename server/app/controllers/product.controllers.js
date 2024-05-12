@@ -1,3 +1,4 @@
+// Product Controllers
 const ProductModel = require("../models/product.model");
 const CategoryModel = require("../models/category.model");
 const BrandModel = require("../models/brand.model");
@@ -87,7 +88,8 @@ exports.getProductList = (req, res) => {
     // }
 
     // * Use condition object to query products
-    ProductModel.find(condition).populate("brand category", "-_id -__v") // Mongoose Hide: _id & __v in result.
+    ProductModel.find(condition)
+        // .populate("brand category", "-_id -__v") // Mongoose Hide: _id & __v in result.
         .sort({ _id: -1 }) // Sort by _id in descending order
         .then(products => {
             // Checking
@@ -148,7 +150,7 @@ exports.updateProduct = (req, res) => {
     ProductModel.findByIdAndUpdate(id, req.body, { new: true })
         .then(product => {
 
-            if (!product) {
+            if (!product || product === null) {
                 return res.status(404).json({
                     status_code: 404,
                     message: `Cannot update Product with id=${id}. Maybe Product was not found!`
@@ -156,16 +158,16 @@ exports.updateProduct = (req, res) => {
             }
 
             res.status(200).json({
-                status_code: 200,
+                success: true,
                 message: "Successfully updated product.",
-                data: product,
+                product,
             })
         }
         )
         .catch(
             err => {
                 res.status(500).json({
-                    status_code: 500,
+                    success: false,
                     message: "Some error occurred while updating the product",
                     error: err.message,
                 })

@@ -70,7 +70,7 @@ const AddProduct = ({ brands, categories, handleAddProduct, productAddStatus }) 
 
         // Handle form submission
         handleAddProduct(formData);
-        console.log(formData);
+        // console.log(formData);
 
 
         // Clear form data
@@ -157,7 +157,7 @@ const AddProduct = ({ brands, categories, handleAddProduct, productAddStatus }) 
     }
 
     /* ______________ Console Section ______________ */
-    console.log("--- Image url: ---", formData.imagesUrl);
+    // console.log("--- Image url: ---", formData.imagesUrl);
     /* _____________________________________________ */
 
     return (

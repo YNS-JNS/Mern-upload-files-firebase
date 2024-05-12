@@ -1,3 +1,4 @@
+// Product Actions
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../config/axois'
 
@@ -47,12 +48,10 @@ export const getProduct = createAsyncThunk(
 export const updateProduct = createAsyncThunk(
     'product/updateProduct', async (payload, thunkAPI) => {
 
-        const { id, data } = payload;
-
         try {
 
-            const response = axios.get(`products/${id}`, data);
-            return response.data;
+            const { data } = axios.put(`products/${payload.id}`, payload);
+            return data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error?.response?.data);
 

@@ -27,3 +27,19 @@ export const createBrand = createAsyncThunk('brand/createBrand', async (payload,
         return thunkAPI.rejectWithValue(error?.response?.data);
     }
 });
+
+// Get brand
+export const getBrand = createAsyncThunk(
+    'brand/getBrand', async (id, thunkAPI) => {
+
+
+        try {
+
+            const { data } = await axios.get(`brands/${id}`);
+            return data;
+
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error?.response?.data);
+        }
+    }
+);

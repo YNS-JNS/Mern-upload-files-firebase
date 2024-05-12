@@ -1,3 +1,4 @@
+// Product Slice
 import { createSlice } from '@reduxjs/toolkit';
 import { getProducts, createProduct, getProduct, updateProduct } from './productActions';
 
@@ -7,10 +8,9 @@ const initialState = {
     productAddStatus: 'idle',
     productUpdateStatus: 'idle',
     products: [],
-    product: {},
+    selectedProduct: null,
     loading: false,
     error: null,
-
 };
 
 const productSlice = createSlice({
@@ -20,7 +20,8 @@ const productSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
 
-        // --------------------Fetch products--------------------
+        // 1- Fetch products: _________________________________________
+        // ____________________________________________________________
         builder.addCase(getProducts.pending, (state) => {
             state.productFetchStatus = 'pending'
             state.loading = true;
@@ -37,7 +38,8 @@ const productSlice = createSlice({
             state.error = payload; // state.error = payload.message;
         });
 
-        // --------------------Create new product--------------------
+        // 2- Create new product: ______________________________________
+        // _____________________________________________________________
         builder.addCase(createProduct.pending, (state) => {
             state.productAddStatus = 'pending'
             state.loading = true;
@@ -54,7 +56,8 @@ const productSlice = createSlice({
             state.error = payload;
         });
 
-        // --------------------Get product--------------------
+        // 3- Get product: ____________________________________________
+        // ____________________________________________________________
         builder.addCase(getProduct.pending, (state) => {
             state.productFetchStatus = 'pending'
             state.loading = true;
@@ -62,7 +65,7 @@ const productSlice = createSlice({
         builder.addCase(getProduct.fulfilled, (state, { payload }) => {
             state.productFetchStatus = 'fulfilled'
             state.loading = false;
-            state.product = payload.product;
+            state.selectedProduct = payload.product;
         });
         builder.addCase(getProduct.rejected, (state, { payload }) => {
             state.productFetchStatus = 'rejected'
@@ -70,7 +73,8 @@ const productSlice = createSlice({
             state.error = payload;
         });
 
-        // --------------------Update product--------------------
+        // 4- Update product:  ________________________________________
+        // ____________________________________________________________
         builder.addCase(updateProduct.pending, (state) => {
             state.productUpdateStatus = 'pending'
             state.loading = true;
@@ -78,14 +82,19 @@ const productSlice = createSlice({
         builder.addCase(updateProduct.fulfilled, (state, { payload }) => {
             state.productUpdateStatus = 'fulfilled'
             state.loading = false;
-            const index = state.products.findIndex((product) => product._id === payload.product._id);
-            state.products[index] = payload.product;
+            const index = state.products.findIndex((product) => product.id === payload?.product?.id);
+            if (index !== -1) {
+            state.products[index] = payload?.product;
+            }
         });
         builder.addCase(updateProduct.rejected, (state, { payload }) => {
             state.productUpdateStatus = 'rejected'
             state.loading = false;
             state.error = payload;
         });
+
+        // 5- Delete product:  ________________________________________
+        // ____________________________________________________________
     }
 });
 
