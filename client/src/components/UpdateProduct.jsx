@@ -1,6 +1,68 @@
-import React from 'react'
+//  UpdateProduct.jsx
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getBrands } from '../features/brand/brandActions';
+import { getCategories } from '../features/category/categoryActions';
+import { updateProduct } from '../features/product/productActions';
 
-const UpdateProduct = ({ handleShowUpdateProduct }) => {
+const UpdateProduct = ({ handleShowUpdateProduct, product }) => {
+
+    const { id, name, description, brand, category, price, quantity, imagesUrl } = product;
+
+    const [formData, setFormData] = useState({
+        name: name || '',
+        description: description || '',
+        brand: brand || '',
+        category: category || '',
+        price: price || '',
+        quantity: quantity || '',
+        imagesUrl: imagesUrl || '',
+    });
+
+    // Handler input change:____________________
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    }
+
+    // _________________________________________
+
+    const dispatch = useDispatch();
+
+    // Get Brands: _____________________________
+    const { brands } = useSelector((state) => state.brand);
+
+    // Get Categories: _________________________
+    const { categories } = useSelector((state) => state.category);
+
+    // _________________________________________
+
+    // Fetch brands and categories on component mount
+    useEffect(() => {
+
+        dispatch(getBrands());
+        dispatch(getCategories());
+    }, [dispatch])
+
+
+    // _________________________________________
+
+    // Handles the update of a product.
+    const handleUpdate = (e) => {
+        e.preventDefault();
+
+        // Create an object with the product id and the updated form data
+        const data = { id, ...formData };
+
+        // Dispatch an action to update the product
+        dispatch(updateProduct(data));
+
+        // Hide the update product modal
+        handleShowUpdateProduct();
+    }
+
+    // _________________________________________
+
     return (
         <div className="fixed inset-0 z-40 min-h-full overflow-y-auto overflow-x-hidden transition flex items-center ">
 
@@ -9,7 +71,7 @@ const UpdateProduct = ({ handleShowUpdateProduct }) => {
 
             {/* Modal  */}
             <div className="relative w-full cursor-pointer pointer-events-none transition my-auto p-4">
-                <div className="min-w-full py-2 bg-gradient-to-tr to-blue-700 from-indigo-900 cursor-default pointer-events-auto  relative rounded-xl mx-auto max-w-sm">
+                <div className="min-w-full py-2 bg-gradient-to-tr to-blue-700 from-indigo-900 cursor-default pointer-events-auto relative rounded-xl mx-auto max-w-sm">
 
                     {/* Close Button */}
                     <button tabIndex={-1} type="button" className="absolute top-2 right-2 rtl:right-auto rtl:left-2"
@@ -24,18 +86,15 @@ const UpdateProduct = ({ handleShowUpdateProduct }) => {
                     {/* content  */}
                     <div className="p-4 px-4 md:p-8 mb-6">
                         <form
-                        // onSubmit={handleSubmit}
+                            onSubmit={handleUpdate}
                         >
-                            <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
-                                <div className="text-gray-300">
-                                    <p className="font-medium text-lg">Add Product</p>
-                                </div>
-
+                            <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 ">
                                 <div className="lg:col-span-2">
+                                    <h2 className="text-xl font-bold text-white">Edit Product</h2>
                                     <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-2">
 
                                         {/* name */}
-                                        <div className="md:col-span-2">
+                                        <div className="md:col-span-1">
                                             <label htmlFor="title" className='text-white'>Name</label>
                                             <input
                                                 type="text"
@@ -43,21 +102,21 @@ const UpdateProduct = ({ handleShowUpdateProduct }) => {
                                                 id="title"
                                                 className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                                                 placeholder='Enter name here...'
-                                            // value={formData.name}
-                                            // onChange={handleChange}
+                                                value={formData.name}
+                                                onChange={handleChange}
                                             />
                                         </div>
 
                                         {/* description */}
-                                        <div className="md:col-span-2">
+                                        <div className="md:col-span-1">
                                             <label htmlFor="description" className='text-white'>Description</label>
                                             <textarea
                                                 name="description"
                                                 id="description"
                                                 className="h-20 border mt-1 rounded px-4 py-2 w-full bg-gray-50"
                                                 placeholder='Enter description here...'
-                                            // value={formData.description}
-                                            // onChange={handleChange}
+                                                value={formData.description}
+                                                onChange={handleChange}
                                             ></textarea>
                                         </div>
 
@@ -68,11 +127,21 @@ const UpdateProduct = ({ handleShowUpdateProduct }) => {
                                                 name="brand"
                                                 id="brand"
                                                 className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                            // value={formData.brand}
-                                            // onChange={handleChange}
+                                                value={formData.brand}
+                                                onChange={handleChange}
                                             >
-                                                <option value="">Brand X</option>
-                                                <option value="">Brand Y</option>
+                                                {
+                                                    brands?.map((brand, index) => (
+
+                                                        <option
+                                                            key={index}
+                                                            value={brand.id}
+                                                        >
+                                                            {brand.name}
+                                                        </option>
+
+                                                    ))
+                                                }
                                             </select>
                                         </div>
 
@@ -83,12 +152,21 @@ const UpdateProduct = ({ handleShowUpdateProduct }) => {
                                                 name="category"
                                                 id="category"
                                                 className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                            // value={formData.category}
-                                            // onChange={handleChange}
+                                                value={formData.category}
+                                                onChange={handleChange}
                                             >
-                                                <option value="">Category X</option>
-                                                <option value="">Category Y</option>
-                                                <option value="">Category Z</option>
+                                                {
+                                                    categories?.map((category, index) => (
+
+                                                        <option
+                                                            key={index}
+                                                            value={category.id}
+                                                        >
+                                                            {category.name}
+                                                        </option>
+
+                                                    ))
+                                                }
                                             </select>
                                         </div>
 
@@ -101,8 +179,8 @@ const UpdateProduct = ({ handleShowUpdateProduct }) => {
                                                 id="price"
                                                 className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                                                 placeholder='Enter price here...'
-                                            // value={formData.price}
-                                            // onChange={handleChange}
+                                                value={formData.price}
+                                                onChange={handleChange}
                                             />
                                         </div>
 
@@ -115,12 +193,19 @@ const UpdateProduct = ({ handleShowUpdateProduct }) => {
                                                 id="quantity"
                                                 className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                                                 placeholder='Enter quantity here...'
-                                            // value={formData.quantity}
-                                            // onChange={handleChange}
+                                                value={formData.quantity}
+                                                onChange={handleChange}
                                             />
                                         </div>
 
                                         {/* image */}
+                                        {/* Display selected image */}
+                                        {formData?.imagesUrl && (
+                                            <div className="mt-5">
+                                                <img src={formData?.imagesUrl} alt="Selected" className="w-1/3 p-3 max-w-full h-auto border-2 border-#191919 rounded-lg" />
+                                            </div>
+                                        )}
+
                                         <div className="md:col-span-1">
                                             <label htmlFor="image" className='text-white'>Image</label>
                                             <input
@@ -128,17 +213,19 @@ const UpdateProduct = ({ handleShowUpdateProduct }) => {
                                                 name="image"
                                                 id="image"
                                                 className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                            // onChange={handleChange}
+                                                onChange={handleChange}
+                                            // value={formData.imagesUrl}
                                             />
                                         </div>
 
                                         <div className="md:col-span-2 text-right">
                                             <div className="inline-flex items-end">
                                                 <button
-                                                    // className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border-b-4 border-blue-700 rounded transform transition duration-200 ease-in-out hover:-translate-y-1 hover:scale-110"
                                                     type='submit'
-                                                >Save</button>
+                                                >
+                                                    Update
+                                                </button>
                                             </div>
                                         </div>
 
@@ -150,10 +237,7 @@ const UpdateProduct = ({ handleShowUpdateProduct }) => {
 
                 </div>
             </div>
-
         </div>
-
-
     )
 }
 

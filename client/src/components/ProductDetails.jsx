@@ -1,11 +1,24 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCategory } from '../features/category/categoryActions';
+import { getBrand } from '../features/brand/brandActions';
 
 const ViewProduct = ({ handleShowProductDetails, product }) => {
 
   const { id, name, description, brand, category, price, quantity, imagesUrl } = product;
 
-  console.log(product)
+  const dispatch = useDispatch();
+
+  const categoryData = useSelector((state) => state.category.category);
+  const brandData = useSelector((state) => state.brand.brand);
+
+  useEffect(() => {
+
+    dispatch(getCategory(category));
+    dispatch(getBrand(brand));
+  }, [dispatch, category, brand])
+
 
 
   return (
@@ -29,39 +42,27 @@ const ViewProduct = ({ handleShowProductDetails, product }) => {
           </button>
 
           {/* content  */}
-          {/* <div className="w-full bg-gray-100 dark:bg-gray-800 py-8"> */}
           <div className="w-full bg-gradient-to-tr to-blue-700 from-indigo-900 py-8">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex flex-col md:flex-row -mx-4">
                 <div className="md:flex-1 px-4">
                   <div className="h-[460px] rounded-lg bg-gray-300 dark:bg-gray-700 mb-4">
-                    <img className="w-full h-full object-cover" 
-                    src={imagesUrl && imagesUrl}
-                    // src="https://cdn.pixabay.com/photo/2020/05/22/17/53/mockup-5206355_960_720.jpg"
-                     alt="Product Image" />
+                    <img className="w-full h-full object-cover"
+                      src={imagesUrl && imagesUrl}
+                      alt="Product Image" />
                   </div>
-                  {/* <div className="flex -mx-2 mb-4">
-                    <div className="w-1/2 px-2">
-                      <button className="w-full bg-gray-900 dark:bg-gray-600 text-white py-2 px-4 rounded-full font-bold hover:bg-gray-800 dark:hover:bg-gray-700">
-                        Add to Cart
-                      </button>
-                    </div>
-                    <div className="w-1/2 px-2">
-                      <button className="w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white py-2 px-4 rounded-full font-bold hover:bg-gray-300 dark:hover:bg-gray-600">
-                        Add to Wishlist
-                      </button>
-                    </div>
-                  </div> */}
                 </div>
                 <div className="md:flex-1 px-4">
                   <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
                     {name}
                   </h2>
                   <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
-                    brand: {brand.name}
+                    {/* brand: {brandData && brandData.name} */}
+                    brand: {brandData?.name}
                   </p>
                   <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
-                    category: {category.name}
+                    {/* category: {categoryData && categoryData.name} */}
+                    category: {categoryData?.name}
                   </p>
                   <div className="flex mb-4">
                     <div className="mr-4">
