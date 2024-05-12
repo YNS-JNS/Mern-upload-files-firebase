@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ButtonAction from './ButtonAction';
 import EditIcon from './Icons/EditIcon';
 import ViewIcon from './Icons/ViewIcon';
@@ -11,26 +11,28 @@ export default function ItemProduct({ product }) {
 
     const { id, name, description, brand, category, price, quantity, imagesUrl } = product;
 
+    // _________________________________________
+
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showProductDetails, setShowProductDetails] = useState(false);
     const [showUpdateProduct, setShowUpdateProduct] = useState(false);
+    // _________________________________________
 
-    // Handler to toggle the modal visibility for dispaly product details
+    // Handler show Delete Modal:_______________
     const handleShowDeleteModal = () => {
         setShowDeleteModal(!showDeleteModal);
     }
 
-
-    // Handler show Product Details:__________________
+    // Handler show Product Details:____________
     const handleShowProductDetails = () => {
         setShowProductDetails(!showProductDetails);
     }
-    // _________________________________________
 
-    // Handler showUpdateProduct:__________________
+    // Handler showUpdateProduct:_______________
     const handleShowUpdateProduct = () => {
         setShowUpdateProduct(!showUpdateProduct);
     }
+
     // _________________________________________
 
     return (
@@ -64,29 +66,35 @@ export default function ItemProduct({ product }) {
                         <ButtonAction icon={<DeleteIcon />}
                             text="Delete"
                             onClick={handleShowDeleteModal}
-
                         />
                     </div>
                 </center>
             </div>
-            {/* ___________ Section for display delete modal ___________ */}
+
+            {/* Section for display delete modal: */}
             {
                 showDeleteModal && (
                     <DeleteModal handleShowDeleteModal={handleShowDeleteModal} />
                 )
             }
 
-            {/* ___________ Section for show product details ___________ */}
+            {/* Section for show product details: */}
             {
                 showProductDetails && (
-                    <ProductDetails handleShowProductDetails={handleShowProductDetails} product={product} />
+                    <ProductDetails
+                        handleShowProductDetails={handleShowProductDetails}
+                        product={product}
+                    />
                 )
             }
 
-            {/* ___________ Section for show update section ___________ */}
+            {/* Section for show update section: */}
             {
                 showUpdateProduct && (
-                    <UpdateProduct handleShowUpdateProduct={handleShowUpdateProduct} />
+                    <UpdateProduct
+                        handleShowUpdateProduct={handleShowUpdateProduct}
+                        product={product}
+                    />
                 )
             }
         </>
