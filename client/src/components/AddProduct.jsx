@@ -6,11 +6,10 @@ const AddProduct = ({ brands, categories, handleAddProduct, productAddStatus }) 
 
     // file image
     const [imageAsFile, setImageAsFile] = useState(null);
-    // String URL of image
-    // const [imageAsUrl, setImageAsUrl] = useState(null);
+    // _________________________________________
     // Progress Percent %
     const [progressPercent, setProgressPercent] = useState(0);
-
+    // _________________________________________
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -20,9 +19,9 @@ const AddProduct = ({ brands, categories, handleAddProduct, productAddStatus }) 
         quantity: '',
         imagesUrl: null
     });
-
+    // _________________________________________
     const [errors, setErrors] = useState({});
-
+    // _________________________________________
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -41,18 +40,19 @@ const AddProduct = ({ brands, categories, handleAddProduct, productAddStatus }) 
         If both conditions are true, it clears the error message for that field, providing real-time error hiding as the user types in the input field.
         */
     };
-
+    // _________________________________________
     const handleChangeImage = (e) => {
 
         const imageFile = e.target.files[0];
         setImageAsFile(imageFile);
     }
-
+    // _________________________________________
     const handleSubmit = (e) => {
         e.preventDefault();
 
         // Form validation
         const formErrors = {};
+
         if (!formData.name) formErrors.name = 'Name is required';
         if (!formData.description) formErrors.description = 'Description is required';
         if (!formData.brand) formErrors.brand = 'Brand is required';
@@ -70,7 +70,6 @@ const AddProduct = ({ brands, categories, handleAddProduct, productAddStatus }) 
 
         // Handle form submission
         handleAddProduct(formData);
-        // console.log(formData);
 
 
         // Clear form data
@@ -84,10 +83,12 @@ const AddProduct = ({ brands, categories, handleAddProduct, productAddStatus }) 
             imagesUrl: null
         })
     };
+    // _________________________________________
 
+    // Upload image to firebase
     const handleFireBaseUpload = (e) => {
         e.preventDefault();
-        console.log('start of upload!');
+        console.log('start of upload! 🚀');
         // async magic goes here...
         // lets start with some error handling
         /*
@@ -129,7 +130,7 @@ const AddProduct = ({ brands, categories, handleAddProduct, productAddStatus }) 
             () => {
                 getDownloadURL(uploadTask.snapshot.ref)
                     .then((downloadURL) => {
-                        // setImageAsUrl(downloadURL);
+                        // Assign the download url to the formData state
                         setFormData({
                             ...formData,
                             imagesUrl: downloadURL
@@ -154,11 +155,8 @@ const AddProduct = ({ brands, categories, handleAddProduct, productAddStatus }) 
         
         On successful upload, we call the getDownloadURL() to get the download URL of the file to display on the app. We then update state with the new image URL downloaded.
         */
-    }
-
-    /* ______________ Console Section ______________ */
-    // console.log("--- Image url: ---", formData.imagesUrl);
-    /* _____________________________________________ */
+    };
+    // _________________________________________
 
     return (
         <div className='drop-shadow-2xl'>
@@ -292,7 +290,6 @@ const AddProduct = ({ brands, categories, handleAddProduct, productAddStatus }) 
                                                 <span className="text-white">{progressPercent}%</span>
                                             </div>
                                         </div>
-
                                     }
 
                                     {
