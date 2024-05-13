@@ -1,9 +1,11 @@
 //  UpdateProduct.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBrands } from '../features/brand/brandActions';
 import { getCategories } from '../features/category/categoryActions';
 import { updateProduct } from '../features/product/productActions';
+import { storage } from '../firebase';
+import { ref, getDownloadURL, uploadBytesResumable, deleteObject } from "firebase/storage";
 
 const UpdateProduct = ({ handleShowUpdateProduct, product }) => {
 
@@ -19,12 +21,6 @@ const UpdateProduct = ({ handleShowUpdateProduct, product }) => {
         imagesUrl: imagesUrl || '',
     });
 
-    // Handler input change:____________________
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    }
-
     // _________________________________________
 
     const dispatch = useDispatch();
@@ -34,6 +30,84 @@ const UpdateProduct = ({ handleShowUpdateProduct, product }) => {
 
     // Get Categories: _________________________
     const { categories } = useSelector((state) => state.category);
+
+    // _________________________________________
+
+    // Get the new image as file for uploading it to firebase
+    const [imageAsFile, setImageAsFile] = useState(null);
+
+    // Get the selected image just for displaying it in the UI
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    // _________________________________________
+    console.log("Existing image: ", formData.imagesUrl);
+    console.log("Selected image: ", selectedImage);
+    console.log("Image as file: ", imageAsFile);
+    // _________________________________________
+
+    // Progress Percent %
+    const [progressPercent, setProgressPercent] = useState(0);
+
+    // Reference to image
+    const fileRef = useRef(null);
+
+    // Handler input change:____________________
+    /*
+    const handleChange = (e) => {
+     we're checking if the name attribute of the element that triggered the event (e.target) is equal to 'image'.
+        if (e.target.name === 'image') {
+            const file = e.target.files[0];
+            setImageAsFile(file);
+
+    Update formData.imagesUrl to show the selected image in the interface
+            const reader = new FileReader();
+            reader.onload = () => {
+                setFormData({...formData, imagesUrl: reader.result });
+            };
+
+            reader.readAsDataURL(file);
+
+        } else {
+            const { name, value } = e.target;
+            setFormData({ ...formData, [name]: value });
+        }
+    }
+    */
+
+    const handleChange = (e) => {
+
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+
+    }
+
+    // _________________________________________
+
+
+    /**
+     * Handler function to select an image from the user's local machine.
+     * This function gets the selected file from the FileInput component, 
+     * converts it to a data URL using the URL.createObjectURL() method, 
+     * and updates the imageAsFile and selectedImage state variables.
+     */
+    const handleSelectedImage = () => {
+
+        // Get the selected file from the FileInput component
+        const file = fileRef.current.files[0];
+
+        // Update the imageAsFile state variable
+        setImageAsFile(file);
+
+        // If a file was selected, create a data URL from it
+        if (file) {
+            // The data URL will contain the image data encoded in base64
+            const imageUrl = URL.createObjectURL(file);
+
+            // Update the selectedImage state variable with the data URL
+            setSelectedImage(imageUrl);
+        }
+
+    }
 
     // _________________________________________
 
@@ -48,6 +122,63 @@ const UpdateProduct = ({ handleShowUpdateProduct, product }) => {
     // _________________________________________
 
     // Handles the update of a product.
+    /*
+        1. Before updating the product with the new image URL, retrieve the existing image URL 
+        from the product data.
+
+        2. After the update is successful, check if there was an existing image URL.
+
+        3. If there was an existing image URL, delete that image from Firebase storage 
+        using its URL.
+    */
+
+    // Handles updating the image on firebase by deleting the old image from Firebase storage
+    const handleFireBaseUpdateImage = (e) => {
+        e.preventDefault();
+        const oldImageUrl = formData.imagesUrl;
+
+        if (imageAsFile) {
+            const storageRef = ref(storage, `images/${imageAsFile.name}`);
+            const uploadTask = uploadBytesResumable(storageRef, imageAsFile);
+
+            uploadTask.on(
+                'state_changed',
+                (snapshot) => {
+                    const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                    setProgressPercent(percent);
+                },
+                (error) => {
+                    alert(error);
+                },
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref)
+                        .then((downloadURL) => {
+
+                            // Update formData.imagesUrl with the new image URL
+                            setFormData({ ...formData, imagesUrl: downloadURL });
+
+                            // Delete old image from Firebase storage
+                            if (oldImageUrl) {
+                                const oldImageRef = ref(storage, oldImageUrl);
+                                deleteObject(oldImageRef)
+                                    .then(() => {
+                                        console.log('Old image deleted successfully');
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error deleting old image:', error);
+                                    });
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error getting download URL:', error);
+                        });
+                }
+            );
+        }
+    };
+
+    // _________________________________________
+
     const handleUpdate = (e) => {
         e.preventDefault();
 
@@ -202,20 +333,48 @@ const UpdateProduct = ({ handleShowUpdateProduct, product }) => {
                                         {/* Display selected image */}
                                         {formData?.imagesUrl && (
                                             <div className="mt-5">
-                                                <img src={formData?.imagesUrl} alt="Selected" className="w-1/3 p-3 max-w-full h-auto border-2 border-#191919 rounded-lg" />
+                                                <img
+                                                    onClick={() => fileRef.current.click()}
+                                                    src={selectedImage === null ? formData?.imagesUrl : selectedImage}
+                                                    alt="Selected"
+                                                    className="w-1/3 p-3 max-w-full h-auto border-2 border-#191919 rounded-lg"
+                                                />
+
+
+                                                {
+                                                    progressPercent > 0 && progressPercent < 100 ?
+                                                        (<span className='text-2xl text-white'>{`Uploading ${progressPercent}%`}</span>)
+                                                        :
+                                                        progressPercent === 100 ?
+                                                            (<span className='text-2xl text-green-500'>Image successfully uploaded! ✔</span>)
+                                                            :
+                                                            ''
+                                                }
+
                                             </div>
                                         )}
 
                                         <div className="md:col-span-1">
-                                            <label htmlFor="image" className='text-white'>Image</label>
                                             <input
                                                 type="file"
                                                 name="image"
                                                 id="image"
                                                 className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                                onChange={handleChange}
-                                            // value={formData.imagesUrl}
+                                                ref={fileRef}
+                                                onChange={handleSelectedImage}
+                                                hidden // hide input file
+                                                accept='image/*' // accept only images
                                             />
+
+                                            <div className="md:col-span-1 flex items-end">
+                                                <button
+                                                    className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border-b-4 border-blue-700 rounded transform transition duration-200 ease-in-out hover:-translate-y-1 hover:scale-110'
+                                                    onClick={handleFireBaseUpdateImage}
+                                                >
+                                                    Upload New Image
+                                                </button>
+                                            </div>
+
                                         </div>
 
                                         <div className="md:col-span-2 text-right">
