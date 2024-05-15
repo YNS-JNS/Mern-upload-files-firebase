@@ -40,9 +40,9 @@ const UpdateProduct = ({ handleShowUpdateProduct, product }) => {
     const [selectedImage, setSelectedImage] = useState(null);
 
     // _________________________________________
-    console.log("Existing image: ", formData.imagesUrl);
-    console.log("Selected image: ", selectedImage);
-    console.log("Image as file: ", imageAsFile);
+    // console.log("Existing image: ", formData.imagesUrl);
+    // console.log("Selected image: ", selectedImage);
+    // console.log("Image as file: ", imageAsFile);
     // _________________________________________
 
     // Progress Percent %
@@ -339,7 +339,6 @@ const UpdateProduct = ({ handleShowUpdateProduct, product }) => {
                                                     alt="Selected"
                                                     className="w-1/3 p-3 max-w-full h-auto border-2 border-#191919 rounded-lg"
                                                 />
-
 
                                                 {
                                                     progressPercent > 0 && progressPercent < 100 ?

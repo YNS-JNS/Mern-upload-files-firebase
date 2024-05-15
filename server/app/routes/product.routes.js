@@ -94,7 +94,7 @@ router.put('/:id', isIdValidator, productCtrl.updateProduct);
  * @desc DELETE | Delete a Product
  * @params {id}
 */
-router.delete('/:id', isIdValidator, productCtrl.updateProduct);
+router.delete('/:id', isIdValidator, productCtrl.deleteOneProduct);
 
 // ______________________________________________________________________
 
