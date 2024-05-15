@@ -1,12 +1,13 @@
 // Product Slice
 import { createSlice } from '@reduxjs/toolkit';
-import { getProducts, createProduct, getProduct, updateProduct } from './productActions';
+import { getProducts, createProduct, getProduct, updateProduct, deleteProduct } from './productActions';
 
 const initialState = {
 
     productFetchStatus: "idle",
     productAddStatus: 'idle',
     productUpdateStatus: 'idle',
+    productDeleteStatus: 'idle',
     products: [],
     selectedProduct: null,
     loading: false,
@@ -84,7 +85,7 @@ const productSlice = createSlice({
             state.loading = false;
             const index = state.products.findIndex((product) => product.id === payload?.product?.id);
             if (index !== -1) {
-            state.products[index] = payload?.product;
+                state.products[index] = payload?.product;
             }
         });
         builder.addCase(updateProduct.rejected, (state, { payload }) => {
@@ -95,6 +96,23 @@ const productSlice = createSlice({
 
         // 5- Delete product:  ________________________________________
         // ____________________________________________________________
+        builder.addCase(deleteProduct.pending, (state) => {
+            state.productDeleteStatus = 'pending'
+            state.loading = true;
+        });
+        builder.addCase(deleteProduct.fulfilled, (state, { payload }) => {
+            state.productDeleteStatus = 'fulfilled'
+            state.loading = false;
+            if (payload && payload.product) {
+            state.products = state.products.filter((product) => product.id !== payload.product.id)         
+            }
+
+        });
+        builder.addCase(deleteProduct.rejected, (state, { payload }) => {
+            state.productDeleteStatus = 'rejected'
+            state.loading = false;
+            state.error = payload;
+        });
     }
 });
 

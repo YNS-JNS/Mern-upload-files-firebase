@@ -17,6 +17,7 @@ const ProductScreen = () => {
         productFetchStatus,
         productAddStatus,
         productUpdateStatus,
+        productDeleteStatus,
         products,
         selectedProduct,
         loading,
@@ -84,7 +85,15 @@ const ProductScreen = () => {
             toast.error("Error updating product, please try again later")
         }
 
-    }, [productAddStatus, productUpdateStatus]); // Only re-run the effect when productAddStatus or productUpdateStatus changes
+        // Toast notification for product delete
+        if (productDeleteStatus === 'fulfilled') {
+            toast.success("Product deleted successfully");
+        }
+        if (productDeleteStatus === 'rejected') {
+            toast.error("Error deleting product, please try again later")
+        }
+
+    }, [productAddStatus, productUpdateStatus, productDeleteStatus]); // Only re-run the effect when productAddStatus or productUpdateStatus changes
 
     // _________________________________________
 

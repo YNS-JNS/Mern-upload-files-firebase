@@ -194,8 +194,9 @@ exports.deleteOneProduct = (req, res) => {
             }
 
             res.status(200).json({
-                status_code: 200,
+                success: true,
                 message: `Product ${product.name} was removed successfully.`,
+                product
             })
         }
         )
